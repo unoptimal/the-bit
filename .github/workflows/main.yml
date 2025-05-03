@@ -1,0 +1,43 @@
+name: the bit
+on:
+  schedule:
+    # This runs at 12:00 UTC every day
+    - cron: '0 12 * * *'
+  
+  # Allows you to run this workflow manually for testing
+  workflow_dispatch:
+# Add this permissions block
+permissions:
+  contents: write
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          # Fetch all history for the repository
+          fetch-depth: 0
+        
+      - name: Setup Git
+        run: |
+          git config --global user.name "unoptimal"
+          git config --global user.email "unoptimalblogs@gmail.com"
+      
+      - name: Update README
+        run: |
+          # Add the quote to the README with a newline first
+          echo -e "\n\nI will not make any more self-referential art." >> README.md
+          
+          # Stage the changes
+          git add README.md
+          
+          # Commit with the specified message
+          git commit -m "I will not make any more self-referential art."
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
